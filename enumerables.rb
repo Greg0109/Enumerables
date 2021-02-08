@@ -1,33 +1,35 @@
 module Enumerables
-    def my_each(array)
+    def my_each
         i = 1
-        array.length.times do
+        self.length.times do
             yield(i)
             i += 1
         end
     end
-    def my_each_with_index(array)
+
+    def my_each_with_index
         i = 1
-        array.length.times do
-            yield(i-1,i)
+        self.length.times do
+            yield(i,i-1)
             i += 1
         end
     end
-    def my_select(array)
+
+    def my_select
         i = 0
-        array.length.times do
-            if yield(array[i])
-                puts array[i]
+        self.length.times do
+            if yield(self[i])
+                puts self[i]
             end
             i += 1
         end
     end
 
-    def my_all(array)
+    def my_all
         i = 0
         statement = true
-        array.length.times do
-            if !yield(array[i])
+        self.length.times do
+            if !yield(self[i])
                  statement = false
             end
             i += 1
@@ -35,11 +37,11 @@ module Enumerables
         return statement
     end
 
-    def my_none(array)
+    def my_none
         i = 0
         statement = false
-        array.length.times do
-            if !yield(array[i])
+        self.length.times do
+            if !yield(self[i])
                  statement = true
             end
             i += 1
@@ -47,11 +49,11 @@ module Enumerables
         return statement
     end
 
-    def my_any(array)
+    def my_any
         i = 0
         statement = false
-        array.length.times do
-            if yield(array[i])
+        self.length.times do
+            if yield(self[i])
                  return true
             end
             i += 1
@@ -59,13 +61,56 @@ module Enumerables
         return statement
     end
 
+    def my_count
+        i = 0
+        if block_given?
+            c = 0
+            self.length.times do
+                if yield(self[i])
+                    c += 1
+                end
+                i += 1
+            end
+            return c
+        else
+            self.length.times do
+                i += 1
+            end
+            return i
+        end
+    end
+
+    def my_map
+        i = 0
+        newArray = Array.new
+        self.length.times do
+            newArray.push(yield(self[i]))
+            i += 1
+        end
+        return newArray
+    end
+
+    def my_inject
+        i = 0
+        count = |sum|
+        n = |n|
+        self.length.times do
+            yield
+            n = self[i]
+            i += 1
+        end
+        return count
+    end
 end
 
 include Enumerables
 testarray = [1,2,3,4,5,6,7,8]
-Enumerables.my_each(testarray) { |x,y| puts "The number is #{x}" }
-Enumerables.my_each_with_index(testarray) { |index,val| puts "index: #{index} for #{val}"}
-Enumerables.my_select(testarray) { |n| n.even?}
-puts Enumerables.my_all(testarray) { |n| n < 20}
-puts Enumerables.my_none(testarray) { |n| n < 20}
-puts Enumerables.my_any(testarray) { |n| n == 20}
+testarray.my_each { |x| puts "The number is #{x}" }
+testarray.my_each { |x| puts "The number is #{x}" }
+testarray.my_each_with_index { |val,index| puts "index: #{index} for #{val}" }
+testarray.my_select { |n| n.even? }
+puts testarray.my_all { |n| n < 20 }
+puts testarray.my_none { |n| n < 20 }
+puts testarray.my_any { |n| n == 20 }
+puts testarray.my_count { |n| n.even? }
+puts testarray.my_map { |n| n+1 }
