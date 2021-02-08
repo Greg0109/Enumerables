@@ -91,15 +91,9 @@ module Enumerables
     end
 
     def my_inject
-        i = 0
-        count = |sum|
-        n = |n|
-        self.length.times do
-            yield
-            n = self[i]
-            i += 1
-        end
-        return count
+        accumulator = self.shift
+        self.my_each { |n| accumulator = yield(accumulator,n) }
+        return accumulator
     end
 end
 
@@ -114,3 +108,4 @@ puts testarray.my_none { |n| n < 20 }
 puts testarray.my_any { |n| n == 20 }
 puts testarray.my_count { |n| n.even? }
 puts testarray.my_map { |n| n+1 }
+puts testarray.my_inject { |sum, n| sum + n }
