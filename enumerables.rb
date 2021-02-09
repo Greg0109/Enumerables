@@ -91,8 +91,12 @@ module Enumerables
     end
 
     def my_inject
-        accumulator = self.shift
-        self.my_each { |n| accumulator = yield(accumulator,n) }
+        accumulator = self[0]
+        self.my_each_with_index {
+            |n,i| if i != 0
+                accumulator = yield(accumulator,n)
+            end
+        }
         return accumulator
     end
 end
