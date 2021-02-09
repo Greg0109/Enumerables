@@ -80,12 +80,19 @@ module Enumerables
         end
     end
 
-    def my_map
+    def my_map(block=nil)
         i = 0
         newArray = Array.new
-        self.length.times do
-            newArray.push(yield(self[i]))
-            i += 1
+        if block != nil
+            self.length.times do
+                newArray.push(block.call(self[i]))
+                i += 1
+            end
+        else
+            self.length.times do
+                newArray.push(yield(self[i]))
+                i += 1
+            end
         end
         return newArray
     end
@@ -108,12 +115,23 @@ end
 include Enumerables
 testarray = [1,2,3,4,5,6,7,8]
 testarray.my_each { |x| puts "The number is #{x}" }
+puts
 testarray.my_each_with_index { |val,index| puts "index: #{index} for #{val}" }
+puts
 testarray.my_select { |n| n.even? }
+puts
 puts testarray.my_all { |n| n < 20 }
+puts
 puts testarray.my_none { |n| n < 20 }
+puts
 puts testarray.my_any { |n| n == 20 }
+puts
 puts testarray.my_count { |n| n.even? }
-puts testarray.my_map { |n| n+1 }
+puts
+square = Proc.new { |x| x**2 }
+#puts testarray.my_map { |x| x**2 }
+puts testarray.my_map(square)
+puts
 puts testarray.my_inject { |sum, n| sum * n }
+puts
 puts multiply_els([2,4,5])
