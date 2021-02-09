@@ -1,16 +1,16 @@
 module Enumerables
     def my_each
-        i = 1
+        i = 0
         self.length.times do
-            yield(i)
+            yield(self[i])
             i += 1
         end
     end
 
     def my_each_with_index
-        i = 1
+        i = 0
         self.length.times do
-            yield(i,i-1)
+            yield(self[i],i)
             i += 1
         end
     end
@@ -101,9 +101,12 @@ module Enumerables
     end
 end
 
+def multiply_els(array)
+    return array.my_inject { |sum,n| sum * n }
+end
+
 include Enumerables
 testarray = [1,2,3,4,5,6,7,8]
-testarray.my_each { |x| puts "The number is #{x}" }
 testarray.my_each { |x| puts "The number is #{x}" }
 testarray.my_each_with_index { |val,index| puts "index: #{index} for #{val}" }
 testarray.my_select { |n| n.even? }
@@ -112,4 +115,5 @@ puts testarray.my_none { |n| n < 20 }
 puts testarray.my_any { |n| n == 20 }
 puts testarray.my_count { |n| n.even? }
 puts testarray.my_map { |n| n+1 }
-puts testarray.my_inject { |sum, n| sum + n }
+puts testarray.my_inject { |sum, n| sum * n }
+puts multiply_els([2,4,5])
