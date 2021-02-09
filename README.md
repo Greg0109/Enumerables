@@ -2,8 +2,6 @@
 
 # Week 1 Enumerables
 
-> Creating first repository with Linter, separate commits and a HTML and CSS file
-
 ## Screenshot
 
 ![Screenshot](Screenshot.png)
@@ -11,7 +9,7 @@
 ## Built With
 
 - Ruby
-- Linter
+- Linters
 
 ## Getting Started
 
