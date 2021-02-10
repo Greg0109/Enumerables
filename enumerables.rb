@@ -83,10 +83,13 @@ module Enumerables
         rescue StandardError
           statement = true if self[i].scan(match)
         end
+        i += 1
       end
     else
       length.times do
-        return true if self[i] == true
+        return true if self[i] == true or self[i].nil?
+
+        i += 1
       end
     end
     statement
