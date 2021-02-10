@@ -1,9 +1,9 @@
 module Enumerables
-  def my_each(block=nil)
+  def my_each(block = nil)
     i = 0
     if block_given?
       length.times do
-        if block != nil
+        if !block.nil?
           block.call(self[i])
         else
           yield(self[i])
@@ -15,11 +15,11 @@ module Enumerables
     end
   end
 
-  def my_each_with_index(block=nil)
+  def my_each_with_index(block = nil)
     i = 0
     if block_given?
       length.times do
-        if block != nil
+        if !block.nil?
           block.call(self[i], i)
         else
           yield(self[i], i)
@@ -31,19 +31,19 @@ module Enumerables
     end
   end
 
-  def my_select(block=nil)
+  def my_select(block = nil)
     i = 0
     if block_given?
       length.times do
-        if block != nil
+        if !block.nil?
           puts self[i] if block.call(self[i])
-        else
-          puts self[i] if yield(self[i])
+        elsif yield(self[i])
+          puts self[i]
         end
         i += 1
       end
     else
-      self.my_each
+      my_each
     end
   end
 
@@ -163,23 +163,21 @@ module Enumerables
     new_array
   end
 
-  def my_inject(block=nil)
-    my_array = Array.new
-    if self.respond_to?(:to_ary)
-      my_array = self
-    else
-      my_array = self.to_a
-    end
-    if block != nil
+  def my_inject(block = nil)
+    my_array = []
+    my_array = if respond_to?(:to_ary)
+                 self
+               else
+                 to_a
+               end
+    if !block.nil?
       my_array.my_inject { |sum, x| sum + x }
-    else
-      if block_given?
-        accumulator = my_array[0]
-        my_array.my_each_with_index do |n, i|
-          accumulator = yield(accumulator, n) if i != 0
-        end
-        accumulator
+    elsif block_given?
+      accumulator = my_array[0]
+      my_array.my_each_with_index do |n, i|
+        accumulator = yield(accumulator, n) if i != 0
       end
+      accumulator
     end
   end
 end
@@ -187,8 +185,3 @@ end
 def multiply_els(array)
   array.my_inject { |sum, n| sum * n }
 end
-
-include Enumerables
-testarray = [1,2,3,4,5,6,7,8]
-testarray.my_each { |x| puts "My number is #{x}"}
-puts testarray.my_select
