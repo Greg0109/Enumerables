@@ -1,4 +1,1 @@
-Gemfile
-Gemfile.lock
-*.json
-node_modules/
+testenumerables.rb

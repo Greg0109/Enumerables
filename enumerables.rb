@@ -25,23 +25,49 @@ module Enumerables
     end
   end
 
-  def my_all
+  def my_all?(match=nil)
     i = 0
     statement = true
-    length.times do
-      statement = false unless yield(self[i])
-      i += 1
+    if block_given?
+      length.times do
+        statement = false unless yield(self[i])
+        i += 1
+      end
+    elsif match != nil
+      length.times do
+        begin
+          if self[i].is_a?(match)
+            statement = false
+          end
+        rescue
+          if self[i].scan(match)
+            statement = false
+          end
+        end
+      end
     end
     statement
   end
 
-  def my_none
+  def my_none?(match=nil)
     i = 0
     statement = false
     if block_given?
       length.times do
         statement = true unless yield(self[i])
         i += 1
+      end
+    elsif match != nil
+      length.times do
+        begin
+          if self[i].is_a?(match)
+            statement = true
+          end
+        rescue
+          if self[i].scan(match)
+            statement = true
+          end
+        end
       end
     else
       length.times do
@@ -51,14 +77,25 @@ module Enumerables
     statement
   end
 
-  def my_any
+  def my_any?(match=nil)
     i = 0
     statement = false
     if block_given?
       length.times do
         return true if yield(self[i])
-
         i += 1
+      end
+    elsif match != nil
+      length.times do
+        begin
+          if self[i].is_a?(match)
+            statement = true
+          end
+        rescue
+          if self[i].scan(match)
+            statement = true
+          end
+        end
       end
     else
       length.times do
@@ -68,7 +105,7 @@ module Enumerables
     statement
   end
 
-  def my_count
+  def my_count(match=nil)
     i = 0
     if block_given?
       c = 0
@@ -77,6 +114,15 @@ module Enumerables
         i += 1
       end
       c
+    elsif match != nil
+      c = 0
+      length.times do
+        if self[i] == match
+          c += 1
+        end
+        i += 1
+      end
+      return c
     else
       length.times do
         i += 1
@@ -88,14 +134,20 @@ module Enumerables
   def my_map(block = nil)
     i = 0
     new_array = []
+    my_array = Array.new
+    if self.respond_to?(:to_ary)
+      my_array = self
+    else
+      my_array = self.to_a
+    end
     if !block.nil?
-      length.times do
-        new_array.push(block.call(self[i]))
+      my_array.length.times do
+        new_array.push(block.call(my_array[i]))
         i += 1
       end
     else
-      length.times do
-        new_array.push(yield(self[i]))
+      my_array.length.times do
+        new_array.push(yield(my_array[i]))
         i += 1
       end
     end
@@ -103,8 +155,14 @@ module Enumerables
   end
 
   def my_inject
-    accumulator = self[0]
-    my_each_with_index do |n, i|
+    my_array = Array.new
+    if self.respond_to?(:to_ary)
+      my_array = self
+    else
+      my_array = self.to_a
+    end
+    accumulator = my_array[0]
+    my_array.my_each_with_index do |n, i|
       accumulator = yield(accumulator, n) if i != 0
     end
     accumulator
