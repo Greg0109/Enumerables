@@ -164,7 +164,6 @@ module Enumerables
   end
 
   def my_inject(block = nil)
-    my_array = []
     my_array = if respond_to?(:to_ary)
                  self
                else
