@@ -25,7 +25,7 @@ module Enumerables
     end
   end
 
-  def my_all?(match=nil)
+  def my_all?(match = nil)
     i = 0
     statement = true
     if block_given?
@@ -33,23 +33,19 @@ module Enumerables
         statement = false unless yield(self[i])
         i += 1
       end
-    elsif match != nil
+    elsif !match.nil?
       length.times do
         begin
-          if self[i].is_a?(match)
-            statement = false
-          end
-        rescue
-          if self[i].scan(match)
-            statement = false
-          end
+          statement = false if self[i].is_a?(match)
+        rescue StandardError
+          statement = false if self[i].scan(match)
         end
       end
     end
     statement
   end
 
-  def my_none?(match=nil)
+  def my_none?(match = nil)
     i = 0
     statement = false
     if block_given?
@@ -57,16 +53,12 @@ module Enumerables
         statement = true unless yield(self[i])
         i += 1
       end
-    elsif match != nil
+    elsif !match.nil?
       length.times do
         begin
-          if self[i].is_a?(match)
-            statement = true
-          end
-        rescue
-          if self[i].scan(match)
-            statement = true
-          end
+          statement = true if self[i].is_a?(match)
+        rescue StandardError
+          statement = true if self[i].scan(match)
         end
       end
     else
@@ -77,24 +69,21 @@ module Enumerables
     statement
   end
 
-  def my_any?(match=nil)
+  def my_any?(match = nil)
     i = 0
     statement = false
     if block_given?
       length.times do
         return true if yield(self[i])
+
         i += 1
       end
-    elsif match != nil
+    elsif !match.nil?
       length.times do
         begin
-          if self[i].is_a?(match)
-            statement = true
-          end
-        rescue
-          if self[i].scan(match)
-            statement = true
-          end
+          statement = true if self[i].is_a?(match)
+        rescue StandardError
+          statement = true if self[i].scan(match)
         end
       end
     else
@@ -105,7 +94,7 @@ module Enumerables
     statement
   end
 
-  def my_count(match=nil)
+  def my_count(match = nil)
     i = 0
     if block_given?
       c = 0
@@ -114,15 +103,13 @@ module Enumerables
         i += 1
       end
       c
-    elsif match != nil
+    elsif !match.nil?
       c = 0
       length.times do
-        if self[i] == match
-          c += 1
-        end
+        c += 1 if self[i] == match
         i += 1
       end
-      return c
+      c
     else
       length.times do
         i += 1
@@ -134,12 +121,12 @@ module Enumerables
   def my_map(block = nil)
     i = 0
     new_array = []
-    my_array = Array.new
-    if self.respond_to?(:to_ary)
-      my_array = self
-    else
-      my_array = self.to_a
-    end
+    my_array = []
+    my_array = if respond_to?(:to_ary)
+                 self
+               else
+                 to_a
+               end
     if !block.nil?
       my_array.length.times do
         new_array.push(block.call(my_array[i]))
@@ -155,12 +142,11 @@ module Enumerables
   end
 
   def my_inject
-    my_array = Array.new
-    if self.respond_to?(:to_ary)
-      my_array = self
-    else
-      my_array = self.to_a
-    end
+    my_array = if respond_to?(:to_ary)
+                 self
+               else
+                 to_a
+               end
     accumulator = my_array[0]
     my_array.my_each_with_index do |n, i|
       accumulator = yield(accumulator, n) if i != 0
