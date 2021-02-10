@@ -70,8 +70,7 @@ module Enumerables
   def my_none?(match = nil)
     i = 0
     statement = false
-    if self.length == 0
-      statement = true
+    statement = true if length.zero?
     if block_given?
       length.times do
         statement = true unless yield(self[i])
